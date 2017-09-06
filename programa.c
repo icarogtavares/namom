@@ -27,7 +27,6 @@ void ler_arquivo() {
 
 void escrever() {
     char frase[60];
-    getchar();
     
     printf("Digite a frase: ");
     fgets(frase, 60, stdin);
@@ -55,6 +54,7 @@ int main(void) {
                 ler_arquivo();
                 break;
             case 2:
+                getchar();
                 escrever();
                 break;
             default:
