@@ -18,6 +18,8 @@
 //  para não ficar buckets vazios alocados em memória.
 bucket hashtable[HASH1_BUCKETS][HASH2_BUCKETS];
 
+void print_buckets();
+void print_bucket(bucket * b);
 void ler_arquivo();
 void ler_tabela();
 void escrever();

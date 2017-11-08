@@ -1,5 +1,25 @@
 #include "programa.h"
 
+void print_buckets() {
+    int i, j;
+    for(i = 0; i < HASH1_BUCKETS; i++) {
+        printf("[%d]\n", i);
+        for(j = 0; j < HASH2_BUCKETS; j++) {
+            printf("--[%d]\n", j);
+            print_bucket(&hashtable[i][j]);
+        }
+    }
+}
+
+void print_bucket(bucket * b) {
+    node * current = b->head;
+
+    while (current != NULL) {
+        printf("%d\n", current->val);
+        current = current->next;
+    }
+}
+
 void ler_arquivo() {
     printf("\n\n");
     printf("Imprimindo dados do arquivo...\n");
@@ -31,10 +51,13 @@ void ler_tabela() {
             int id = atoi(strtok(line, "|"));
             int super_hash_bucket = get_hash(id, HASH1_BUCKETS);
             int mini_hash_bucket = get_hash(id, HASH2_BUCKETS);
-            // push(hashtable[super_hash_bucket][mini_hash_bucket], id);
+            printf("--id[%d] sup[%d] mini[%d]\n", id, super_hash_bucket, mini_hash_bucket);
+            push(&hashtable[super_hash_bucket][mini_hash_bucket], id);
         }
         fclose(arq);
     }
+
+    print_buckets();
 
     printf("\n\n");
 }
@@ -69,7 +92,7 @@ int main(void) {
 
         switch(opcao) {
             case 1:
-                ler_arquivo();
+                ler_tabela();
                 break;
             case 2:
                 getchar();
