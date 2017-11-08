@@ -7,5 +7,5 @@ typedef struct node {
     struct node * next;
 } node;
 
-void push(node ** head, int val)
+void push(node ** head, int val);
 void clear_list(node ** head);

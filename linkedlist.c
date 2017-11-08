@@ -13,12 +13,12 @@ void clear_list(node ** head) {
     node * next_node = NULL;
     
     if (*head == NULL) {
-        return -1;
+        return;
     }
 
     do {
         next_node = (*head)->next;
         free(*head);
         *head = next_node;
-    } while ( (*head) != null );
+    } while ( (*head) != NULL );
 }

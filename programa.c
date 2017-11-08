@@ -9,8 +9,13 @@ void ler_arquivo() {
     FILE *arq = fopen(FILE_PATH, "r");
     char line[256];
     if (arq) {
-        while (fgets(line, sizeof(line), file)) {
-            printf("%s\n", line);
+        while (fgets(line, sizeof(line), arq)) {
+            printf("%s", line);
+            char *p;
+            p = strtok(line, "|");
+            if(p) {
+                printf("%d\n", atoi(p));
+            }
         }
         fclose(arq);
     }
