@@ -1,23 +1,16 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "programa.h"
-
-#define FILE_PATH "teste.txt"
 
 void ler_arquivo() {
     printf("\n\n");
-    printf("******************************\n");
     printf("Imprimindo dados do arquivo...\n");
     printf("******************************\n");
     printf("\n");
 
-    FILE *arq = fopen(FILE_PATH, "a+");
-    char c;
+    FILE *arq = fopen(FILE_PATH, "r");
+    char line[256];
     if (arq) {
-        while ((c = getc(arq)) != EOF) {
-            putchar(c);
+        while (fgets(line, sizeof(line), file)) {
+            printf("%s\n", line);
         }
         fclose(arq);
     }
@@ -36,6 +29,14 @@ void escrever() {
         fputs(frase, arq);
         fclose(arq);
     }
+}
+
+int hash1(int key) {
+    return key % HASH1_BUCKETS;
+}
+
+int hash2(int key) {
+    return key % HASH2_BUCKETS;
 }
 
 int main(void) {
