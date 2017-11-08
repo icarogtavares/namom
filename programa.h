@@ -14,10 +14,11 @@
 #define HASH1_BUCKETS 3
 #define HASH2_BUCKETS 5
 
-node h1[HASH1_BUCKETS];
-node h2[HASH2_BUCKETS];
+// Interessante seria criar "node ** h1" e alocar memória de acordo como são preenchidos os buckets
+//  para não ficar buckets vazios alocados em memória.
+bucket hashtable[HASH1_BUCKETS][HASH2_BUCKETS];
 
 void ler_arquivo();
+void ler_tabela();
 void escrever();
-int hash1(int key);
-int hash2(int key);
+int get_hash(int key, int hash);

@@ -9,13 +9,29 @@ void ler_arquivo() {
     FILE *arq = fopen(FILE_PATH, "r");
     char line[256];
     if (arq) {
+        while ( fgets(line, sizeof(line), arq) ) {
+            printf("%s", line);
+        }
+        fclose(arq);
+    }
+    printf("\n\n");
+}
+
+void ler_tabela() {
+    printf("\n\n");
+    printf("Imprimindo dados do arquivo...\n");
+    printf("******************************\n");
+    printf("\n");
+
+    FILE *arq = fopen(FILE_PATH, "r");
+    char line[256];
+    if (arq) {
         while (fgets(line, sizeof(line), arq)) {
             printf("%s", line);
-            char *p;
-            p = strtok(line, "|");
-            if(p) {
-                printf("%d\n", atoi(p));
-            }
+            int id = atoi(strtok(line, "|"));
+            int super_hash_bucket = get_hash(id, HASH1_BUCKETS);
+            int mini_hash_bucket = get_hash(id, HASH2_BUCKETS);
+            // push(hashtable[super_hash_bucket][mini_hash_bucket], id);
         }
         fclose(arq);
     }
@@ -36,12 +52,8 @@ void escrever() {
     }
 }
 
-int hash1(int key) {
-    return key % HASH1_BUCKETS;
-}
-
-int hash2(int key) {
-    return key % HASH2_BUCKETS;
+int get_hash(int key, int hash) {
+    return key % hash;
 }
 
 int main(void) {
