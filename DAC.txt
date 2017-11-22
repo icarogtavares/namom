@@ -105,13 +105,27 @@ funcao unlockMemoria(HashMap memoria){
 
 funcao joinParticoes(Number numeroMaximoParticoes, Tabela t1, Tabela t2){
 	while(numeroMaximoParticoes > 0){
-		Thread startjoin(getMemoria(numeroMaximoParticoes, t1), getMemoria(numeroMaximoParticoes, t2));
+		Thread startjoin(getMemoria(numeroMaximoParticoes, t1), getMemoria(numeroMaximoParticoes, t2), numeroMaximoMiniParticoes);
 		numeroMaximoParticoes--;
 	}
 }
 
-funcao startjoin(){
+funcao startjoin(superParticao superParticaoR, superParticao superParticaoS, Number numeroMaximoMiniParticoes){
+	while(numeroMaximoMiniParticoes >0){
+		miniParticaoR = superParticaoR.getMiniParticao(numeroMaximoMiniParticoes);
+		miniParticaoS = superParticaoS.getMiniParticao(numeroMaximoMiniParticoes);
+			while(miniParticaoR.hasNext()){
+				tuplaR = miniParticaoR.getNext();
+				while(miniParticaoS.hasNext(){
+					tuplaS = miniParticaoS.getNext();
+					if(tuplaR == tuplaS){
+						addResult(tuplaR, tuplaS);
+					}
+				}
+			}
+		numeroMaximoMiniParticoes--;
+	}
+		
 	
 }
-
 
