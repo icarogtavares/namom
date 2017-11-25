@@ -45,6 +45,7 @@ void ler_tabela(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
         fclose(arq);
     }
 
+    //Método para imprimir os buckets após fazer a leitura da tabela
     // print_buckets(hashtable);
 
     printf("\n\n");
@@ -61,7 +62,7 @@ void start_join(linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS], l
                 s_node = hashtable_s[i][j].head;
                 while(s_node != NULL) {
                     if(r_node->t.id == s_node->t.id) {
-                        printf("R %d deu match em S %d", r_node->t.id, s_node->t.id);
+                        printf("R %d deu match em S %d\n", r_node->t.id, s_node->t.id);
                     }
                     s_node = s_node->next;
                 }
