@@ -1,0 +1,131 @@
+
+1 - Ler tabela R 
+1.1 Ler Bloco
+1.2 Iterar nas tuplas daquele bloco
+1.3 Verificar a condicao => clausura where
+1.4 Calcular funcoes hash
+1.5 Adicionar os elementos no local correto 'Cuidado com a concorrencia da memoria'
+2 - Ler table S
+2.1 Ler Bloco
+2.2 Iterar nas tuplas daquele bloco
+2.3 Verificar a condicao => clausura where
+1.4 Calcular funcoes hash
+1.5 Adicionar os elementos no local correto 'Cuidado com a concorrencia da memoria'
+3 - Fazer o join propiamente dito
+
+/**
+* jump 1
+* Com apenas uma thread
+* O mais simples possivel
+**/
+jumpFactor = 1;
+maxH1 = 1;
+maxH2 = 1;
+blocoInicial = 1;
+numeroThreads = maxH1;
+
+colunas = [];
+clausuras = [];
+colunaJoin = [];
+
+startLeitura(numeroThreads, Tabela R, blocoInicial, jump, colunas, clausuras, colunaJoin);
+
+//Parametros tabela S
+colunas = [];
+clausuras = [];
+colunaJoin = [];
+startLeitura(numeroThreads, Tabela S, blocoInicial, jump, colunas, clausuras, colunaJoin);
+
+//Join Tables
+joinParticoes(numeroThreads);
+
+funcao startLeitura(Number numeroThreads, Tabela tab, blocoInicial, jump, colunas, clausuras, colunaJoin){
+	while(numeroThreads > 0){
+		//Iniciar lendo a tabela R
+		Thread LerTabela(tab, blocoInicial, jump, colunas, clausuras, colunaJoin);
+		//Fim tabela R
+		numeroThreads--;
+	}
+	//No JAVA usa um join nas threads para o programa esperar que todas terminem;
+}
+
+funcao LerTabela(Tabela tab, blocoInicial number, jumpFactor number, array colunas, array clausuras, array colunaJoin){
+	Bloco block = LerBloco(tab, blocoInicial);
+	enquanto(block != null){
+		Linha line = b.LerProximaLinha(colunas);
+		enquanto(line != null){
+			if(line.checarClausura(clausuras)){
+				h1 = hashSuperParticao(line.getColumnJoin(colunaJoin), maxH1);
+				h2 = hashMiniParticao(line.getColumnJoin(colunaJoin), maxH2);
+				addMemoria(line, h1, h2);
+			}
+			line = b.LerProximaLinha(colunas);
+		}
+		block = LerBloco(tab, blocoInicial);
+	}
+}
+
+//Funcao do objeto Tabela
+funcao LerBloco(Tabela tab, numeroBloco number){
+	return tab.getBloco(number);
+}
+
+//Funcao do objeto Bloco
+funcao LerProximaLinha(array colunas){
+	Linha line = this.getNextLinha();
+	return line.colunas(colunas);
+}
+
+//Funcao hash
+//Estamos fazendo apenas com numeros
+funcao getHash(Number atributo, Number hash){
+	return atributo % hash;
+}
+
+//Funcao para manter a memoria
+funcao addMermoria(Linha line, Number h1, Number h2, Tabela tabela){
+		lockMemoria(getMemoria(h1, tabela));
+		addLinha(line, getMemoria(h1, tabela), h2);
+		unlockMemoria(h1, tabela);
+}
+
+funcao addLinha(Linha line, HashMap memoria, h2){
+	miniParticao = memoria.get(h2);
+	miniParticao.add(line);
+}
+
+funcao lockMemoria(HashMap memoria){
+	//Aqui lista os objetos em memoria e lock somente a memoria h1
+}
+
+funcao unlockMemoria(HashMap memoria){
+	//Libera o objeto da memoria h1
+}
+
+
+funcao joinParticoes(Number numeroMaximoParticoes, Tabela t1, Tabela t2){
+	while(numeroMaximoParticoes > 0){
+		Thread startjoin(getMemoria(numeroMaximoParticoes, t1), getMemoria(numeroMaximoParticoes, t2), numeroMaximoMiniParticoes);
+		numeroMaximoParticoes--;
+	}
+}
+
+funcao startjoin(superParticao superParticaoR, superParticao superParticaoS, Number numeroMaximoMiniParticoes){
+	while(numeroMaximoMiniParticoes >0){
+		miniParticaoR = superParticaoR.getMiniParticao(numeroMaximoMiniParticoes);
+		miniParticaoS = superParticaoS.getMiniParticao(numeroMaximoMiniParticoes);
+			while(miniParticaoR.hasNext()){
+				tuplaR = miniParticaoR.getNext();
+				while(miniParticaoS.hasNext(){
+					tuplaS = miniParticaoS.getNext();
+					if(tuplaR == tuplaS){
+						addResult(tuplaR, tuplaS);
+					}
+				}
+			}
+		numeroMaximoMiniParticoes--;
+	}
+		
+	
+}
+
