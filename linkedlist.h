@@ -15,7 +15,6 @@ typedef struct linkedlist {
 } linkedlist;
 
 void push(linkedlist * llist, tuple t);
-// tuple* search_by_id(node * head, int id);
-// tuple* remove_by_id(node ** head, int id);
+tuple * search_by_id(node * head, int id);
 
 #endif
