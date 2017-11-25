@@ -7,7 +7,7 @@
 #include "linkedlist.h"
 #include "datatypes.h"
 
-#define FILE_PATH "teste.txt"
+#define FILE_PATH "data_test.txt"
 
 /*
     SUPER_HASH => No. de buckets da Super Hash Table
@@ -20,11 +20,12 @@
 
 // Interessante seria criar "node ** h1" e alocar memória de acordo como são preenchidos os buckets
 //  para não ficar buckets vazios alocados em memória.
-bucket hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
+linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
+linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
 
-void print_buckets();
-void print_bucket(bucket * b);
-// void ler_tabela();
+void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
+void print_linkedlist(linkedlist * llist);
+void ler_tabela(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
 void escrever();
 int get_hash(int key, int hash);
 

@@ -1,49 +1,54 @@
 #include "programa.h"
 
-void print_buckets() {
+void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
     int i, j;
     for(i = 0; i < SUPER_HASH_BUCKETS; i++) {
         printf("[%d]\n", i);
         for(j = 0; j < MINI_HASH_BUCKETS; j++) {
             printf("--[%d]\n", j);
-            print_bucket(&hashtable[i][j]);
+            print_linkedlist(&hashtable[i][j]);
         }
     }
 }
 
-void print_bucket(linkedlist * llist) {
+void print_linkedlist(linkedlist * llist) {
     node * current = llist->head;
 
     while (current != NULL) {
-        printf("%d\n", current->t->id);
+        printf("%d, %s, %s\n", current->t.id, current->t.name, current->t.last_name);
         current = current->next;
     }
 }
 
-// void ler_tabela() {
-//     printf("\n\n");
-//     printf("Imprimindo dados do arquivo...\n");
-//     printf("******************************\n");
-//     printf("\n");
+void ler_tabela(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
+    FILE *arq = fopen(FILE_PATH, "r");
+    block b;
 
-//     FILE *arq = fopen(FILE_PATH, "r");
-//     char line[256];
-//     if (arq) {
-//         while (fgets(line, sizeof(line), arq)) {
-//             printf("%s", line);
-//             int id = atoi(strtok(line, "|"));
-//             int super_hash_bucket = get_hash(id, SUPER_HASH_BUCKETS);
-//             int mini_hash_bucket = get_hash(id, MINI_HASH_BUCKETS);
-//             printf("--id[%d] sup[%d] mini[%d]\n", id, super_hash_bucket, mini_hash_bucket);
-//             push(&hashtable[super_hash_bucket][mini_hash_bucket], id);
-//         }
-//         fclose(arq);
-//     }
+    int i, j;
+    if (arq) {
+        rewind(arq);
+        fread(&b, sizeof(block), 1, arq);
+    
+        //lerblock
+        while (!feof(arq)) {
+            for(i=0; i < NUM_PAGES_IN_BLOCK; i++) {
+                for(j=0; j < NUM_TUPLES_IN_PAGE; j++) {
+                    int super_hash_bucket = get_hash(b.pages[i].tuples[j].id, SUPER_HASH_BUCKETS);
+                    int mini_hash_bucket = get_hash(b.pages[i].tuples[j].id, MINI_HASH_BUCKETS);
+                    push(&hashtable[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
+                    // printf("%d, %s, %s\n", b.pages[i].tuples[j].id, b.pages[i].tuples[j].name, b.pages[i].tuples[j].last_name);
+                }
+            }
+            fread(&b, sizeof(block),1,arq);
+        }
 
-//     print_buckets();
+        fclose(arq);
+    }
 
-//     printf("\n\n");
-// }
+    print_buckets(hashtable);
+
+    printf("\n\n");
+}
 
 int get_hash(int key, int hash) {
     return key % hash;
@@ -113,7 +118,7 @@ void imprimir_arquivo_pagina() {
 
 void imprimir_arquivo_bloco() {
     FILE *arq;
-    block llist;
+    block b;
     int i, j;
     printf("\n\n");
     printf("******************************\n");
@@ -122,15 +127,15 @@ void imprimir_arquivo_bloco() {
     printf("\n");
     arq = fopen("data_test.txt", "r");
     rewind(arq);
-    fread(&llist, sizeof(block), 1, arq);
+    fread(&b, sizeof(block), 1, arq);
 
     while (!feof(arq)) {
         for(i=0; i < 4; i++) {
             for(j=0; j < 2; j++) {
-                printf("%d, %s, %s\n", llist.pages[i].tuples[j].id, llist.pages[i].tuples[j].name, llist.pages[i].tuples[j].last_name);
+                printf("%d, %s, %s\n", b.pages[i].tuples[j].id, b.pages[i].tuples[j].name, b.pages[i].tuples[j].last_name);
             }
         }
-        fread(&llist, sizeof(block),1,arq);
+        fread(&b, sizeof(block),1,arq);
     }
     printf("\n\n");
 }
@@ -149,7 +154,7 @@ int main(void) {
 
         switch(opcao) {
             case 1:
-                imprimir_arquivo_bloco();
+                ler_tabela(hashtable_r);
                 break;
             case 2:
                 getchar();

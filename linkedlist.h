@@ -6,7 +6,7 @@
 #include "datatypes.h"
 
 typedef struct node {
-    struct tuple * t;
+    struct tuple t;
     struct node * next;
 } node;
 
@@ -14,10 +14,8 @@ typedef struct linkedlist {
     node * head;
 } linkedlist;
 
-void push(linkedlist * llist, tuple * t);
-tuple* search_by_id(node * head, int id);
-tuple* remove_by_id(node ** head, int id);
-tuple* pop(node ** head);
-// void clear_list(node ** head);
+void push(linkedlist * llist, tuple t);
+// tuple* search_by_id(node * head, int id);
+// tuple* remove_by_id(node ** head, int id);
 
 #endif
