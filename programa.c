@@ -45,9 +45,30 @@ void ler_tabela(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
         fclose(arq);
     }
 
-    print_buckets(hashtable);
+    // print_buckets(hashtable);
 
     printf("\n\n");
+}
+
+void start_join(linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS], linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
+    int i, j;
+    node * r_node;
+    node * s_node;
+    for(i = 0; i < SUPER_HASH_BUCKETS; i++) {
+        for(j = 0; j < MINI_HASH_BUCKETS; j++) {
+            r_node = hashtable_r[i][j].head;
+            while (r_node != NULL) {
+                s_node = hashtable_s[i][j].head;
+                while(s_node != NULL) {
+                    if(r_node->t.id == s_node->t.id) {
+                        printf("R %d deu match em S %d", r_node->t.id, s_node->t.id);
+                    }
+                    s_node = s_node->next;
+                }
+                r_node = r_node->next;
+            }
+        }
+    }
 }
 
 int get_hash(int key, int hash) {
@@ -148,7 +169,7 @@ int main(void) {
         printf("**********************************\n");
         printf("************** MENU **************\n");
         printf("**********************************\n");
-        printf("\n(1) Ler arquivo (2) Escrever no arquivo (0) SAIR");
+        printf("\n(1) Ler Tabela R\n(2) Ler Tabela S \n(3) Join \n(0) SAIR");
         printf("\nDigite a opçao desejada: ");
         scanf("%d", &opcao);
 
@@ -157,8 +178,10 @@ int main(void) {
                 ler_tabela(hashtable_r);
                 break;
             case 2:
-                getchar();
-                // escrever();
+                ler_tabela(hashtable_s);
+                break;
+            case 3:
+                start_join(hashtable_r, hashtable_s);
                 break;
             default:
                 printf("Por favor, insira uma opção válida. \n\n\n");
