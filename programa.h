@@ -4,10 +4,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
+
 #include "linkedlist.h"
 #include "datatypes.h"
 
+
 #define FILE_PATH "data_test.txt"
+#define FILE_ROWS 3000000
+#define BLOCKS_IN_TABLE FILE_ROWS / NUM_TUPLES_IN_BLOCK
+#define NUM_THREADS 4
 
 /*
     SUPER_HASH => No. de buckets da Super Hash Table
@@ -18,6 +24,14 @@
 #define SUPER_HASH_BUCKETS 3
 #define MINI_HASH_BUCKETS 5
 
+typedef struct thread_join_args {
+    linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
+    int range_start;
+    int range_end;
+} thread_join_args;
+
+pthread_t threads[NUM_THREADS];
+
 // Interessante seria criar "node ** h1" e alocar memória de acordo como são preenchidos os buckets
 //  para não ficar buckets vazios alocados em memória.
 linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
@@ -25,8 +39,10 @@ linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
 
 void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
 void print_linkedlist(linkedlist * llist);
-void ler_tabela(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
-void escrever();
+
+void start_leitura(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
+void join_threads();
+void * ler_tabela(void * arg);
 int get_hash(int key, int hash);
 
 void popular_arquivo_com_3milhoes_de_tuplas();

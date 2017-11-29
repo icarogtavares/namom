@@ -20,25 +20,54 @@ void print_linkedlist(linkedlist * llist) {
     }
 }
 
-void ler_tabela(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
+void start_leitura(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
+    int i;
+    thread_join_args args[NUM_THREADS];
+
+    for(i = 0; i < NUM_THREADS; i++) {
+        memcpy(args[i].hashtable, hashtable, sizeof(hashtable));
+        args[i].range_start = (BLOCKS_IN_TABLE / NUM_THREADS) * i;
+        if(i == NUM_THREADS-1) { //Se for a última thread, ler o arquivo até o fim
+            args[i].range_end = BLOCKS_IN_TABLE;
+        } else {
+            args[i].range_end = (BLOCKS_IN_TABLE / NUM_THREADS) * (i+1); //i+1 porque começa em 0
+        }
+        pthread_create(&(threads[i]), NULL, ler_tabela, &(args[i]));
+    }
+
+    join_threads();
+}
+
+void join_threads() {
+    int i;
+    for(i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+}
+
+void * ler_tabela(void * arg) {
+    thread_join_args * join_args = (thread_join_args*) arg;
     FILE *arq = fopen(FILE_PATH, "r");
     block b;
-
     int i, j;
+
     if (arq) {
-        rewind(arq);
+        // rewind(arq);
+        fseek(arq, sizeof(block) * (join_args->range_start), SEEK_SET);
         fread(&b, sizeof(block), 1, arq);
     
-        //lerblock
-        while (!feof(arq)) {
+        //ler bloco
+        while (!feof(arq) || join_args->range_end > 0) {
             for(i=0; i < NUM_PAGES_IN_BLOCK; i++) {
                 for(j=0; j < NUM_TUPLES_IN_PAGE; j++) {
+                    printf("%d", join_args->range_end);
                     int super_hash_bucket = get_hash(b.pages[i].tuples[j].id, SUPER_HASH_BUCKETS);
                     int mini_hash_bucket = get_hash(b.pages[i].tuples[j].id, MINI_HASH_BUCKETS);
-                    push(&hashtable[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
+                    push(join_args->hashtable[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
                     // printf("%d, %s, %s\n", b.pages[i].tuples[j].id, b.pages[i].tuples[j].name, b.pages[i].tuples[j].last_name);
                 }
             }
+            --(join_args->range_end);
             fread(&b, sizeof(block),1,arq);
         }
 
@@ -46,7 +75,7 @@ void ler_tabela(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
     }
 
     //Método para imprimir os buckets após fazer a leitura da tabela
-    // print_buckets(hashtable);
+    // print_buckets(join_args->hashtable);
 
     printf("\n\n");
 }
@@ -81,7 +110,7 @@ void popular_arquivo_com_3milhoes_de_tuplas() {
     FILE *arq;
     tuple t;
 
-    for(i = 1; i <= 3000000; i++) {
+    for(i = 1; i <= FILE_ROWS; i++) {
         sprintf(t.name, "%dicaro", i);
         sprintf(t.last_name, "%dtavares", i);
         t.id = i;
@@ -162,7 +191,7 @@ void imprimir_arquivo_bloco() {
     printf("\n\n");
 }
 
-int main(void) {
+int main(int argc, char **argv) {
     // popular_arquivo_com_3milhoes_de_tuplas();
 
     int opcao = -1;
@@ -170,18 +199,23 @@ int main(void) {
         printf("**********************************\n");
         printf("************** MENU **************\n");
         printf("**********************************\n");
-        printf("\n(1) Ler Tabela R\n(2) Ler Tabela S \n(3) Join \n(0) SAIR");
+        printf("\n (1) Ler Tabela R. \n (2) Ler Tabela S. \n (3) Join. \n Processo completo. \n (0) SAIR.");
         printf("\nDigite a opçao desejada: ");
         scanf("%d", &opcao);
 
         switch(opcao) {
             case 1:
-                ler_tabela(hashtable_r);
+                start_leitura(hashtable_r);
                 break;
             case 2:
-                ler_tabela(hashtable_s);
+                start_leitura(hashtable_s);
                 break;
             case 3:
+                start_join(hashtable_r, hashtable_s);
+                break;
+            case 4:
+                start_leitura(hashtable_r);
+                start_leitura(hashtable_s);
                 start_join(hashtable_r, hashtable_s);
                 break;
             default:

@@ -3,6 +3,7 @@
 
 #define NUM_PAGES_IN_BLOCK 4
 #define NUM_TUPLES_IN_PAGE 2
+#define NUM_TUPLES_IN_BLOCK NUM_PAGES_IN_BLOCK*NUM_TUPLES_IN_PAGE
 
 typedef struct tuple {
     int id;
