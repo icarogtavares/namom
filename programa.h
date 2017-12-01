@@ -14,6 +14,7 @@
 #define FILE_ROWS 3000000
 #define BLOCKS_IN_TABLE FILE_ROWS / NUM_TUPLES_IN_BLOCK
 #define NUM_THREADS 4
+#define JUMP_FACTOR 10
 
 /*
     SUPER_HASH => No. de buckets da Super Hash Table
@@ -25,9 +26,9 @@
 #define MINI_HASH_BUCKETS 5
 
 typedef struct thread_join_args {
-    linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
-    int range_start;
-    int range_end;
+    // linkedlist * hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
+    int hashtable; // [1=hashtable_r], [2=hashtable_s]
+    int id;
 } thread_join_args;
 
 pthread_t threads[NUM_THREADS];
@@ -40,8 +41,9 @@ linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
 void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
 void print_linkedlist(linkedlist * llist);
 
-void start_leitura(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
+void start_leitura(int hashtable);
 void join_threads();
+int init_jump(int thread_id);
 void * ler_tabela(void * arg);
 int get_hash(int key, int hash);
 
