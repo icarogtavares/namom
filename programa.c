@@ -38,7 +38,7 @@ void start_leitura(int hashtable) {
 void join_threads() {
     int i;
     for(i = 0; i < NUM_THREADS; i++) {
-        // pthread_join(threads[i], NULL);
+        pthread_join(threads[i], NULL);
     }
 }
 
@@ -90,7 +90,6 @@ void * ler_tabela(void * arg) {
     // print_buckets(join_args->hashtable);
 
     printf("\n\n");
-    pthread_exit(NULL);
 }
 
 void start_join(linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS], linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
@@ -241,5 +240,5 @@ int main(int argc, char **argv) {
         }
     } while (opcao != 0);
     
-    pthread_exit(NULL);   
+    return 0;    
 }
