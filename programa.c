@@ -68,10 +68,14 @@ void * ler_tabela(void * arg) {
                     int mini_hash_bucket = get_hash(b.pages[i].tuples[j].id, MINI_HASH_BUCKETS);
                     switch(join_args->hashtable) {
                         case 1:
+                            pthread_mutex_lock(&mutex_hashtable);
                             push(&hashtable_r[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
+                            pthread_mutex_unlock(&mutex_hashtable);
                             break;
                         case 2:
+                            pthread_mutex_lock(&mutex_hashtable);
                             push(&hashtable_s[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
+                            pthread_mutex_unlock(&mutex_hashtable);
                             break;
                     }
                     // push(join_args->hashtable[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
@@ -86,13 +90,14 @@ void * ler_tabela(void * arg) {
             fread(&b, sizeof(block), 1, arq);
         }
 
-        fclose(arq);
+        fclose(arq);        
     }
 
     //Método para imprimir os buckets após fazer a leitura da tabela
     // print_buckets(join_args->hashtable);
 
     printf("\n\n");
+    pthread_exit((void*) 0);
 }
 
 void start_join(linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS], linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
@@ -128,7 +133,7 @@ void popular_arquivo_com_3milhoes_de_tuplas() {
     FILE *arq;
     tuple t;
 
-    for(i = 1; i <= 80 * NUM_TUPLES_IN_PAGE * NUM_PAGES_IN_BLOCK; i++) {
+    for(i = 1; i <= 5000 * NUM_TUPLES_IN_PAGE * NUM_PAGES_IN_BLOCK; i++) { // Colocar FILE_ROWS no <=
         sprintf(t.name, "%dicaro", i);
         sprintf(t.last_name, "%dtavares", i);
         t.id = i;
@@ -210,7 +215,7 @@ void imprimir_arquivo_bloco() {
 }
 
 int main(int argc, char **argv) {
-
+    pthread_mutex_init(&mutex_hashtable, NULL);
     int opcao = -1;
     do {
         printf("**********************************\n");
@@ -243,5 +248,6 @@ int main(int argc, char **argv) {
         }
     } while (opcao != 0);
     
-    return 0;    
+    pthread_mutex_destroy(&mutex_hashtable);
+    pthread_exit(NULL);
 }

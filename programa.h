@@ -38,6 +38,8 @@ pthread_t threads[NUM_THREADS];
 linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
 linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
 
+pthread_mutex_t mutex_hashtable;
+
 void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
 void print_linkedlist(linkedlist * llist);
 
