@@ -46,7 +46,7 @@ void join_threads() {
 }
 
 int init_jump(int thread_id) {
-    return thread_id*10-10;
+    return thread_id * JUMP_FACTOR - JUMP_FACTOR;
 }
 
 void * ler_tabela(void * arg) {
@@ -83,8 +83,8 @@ void * ler_tabela(void * arg) {
                 }
             }
             ++cur_block;
-            if(cur_block == 10) {
-                fseek(arq, sizeof(block) * (10 * NUM_THREADS - 10), SEEK_CUR);
+            if(cur_block == JUMP_FACTOR) {
+                fseek(arq, sizeof(block) * (JUMP_FACTOR * NUM_THREADS - JUMP_FACTOR), SEEK_CUR);
                 cur_block = 0;
             }
             fread(&b, sizeof(block), 1, arq);
