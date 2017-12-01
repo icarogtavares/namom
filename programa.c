@@ -21,9 +21,13 @@ void print_linkedlist(linkedlist * llist) {
 }
 
 void start_leitura(int hashtable) {
+    create_threads(hashtable);
+}
+
+void create_threads(int hashtable) {
     int i;
     thread_join_args args[NUM_THREADS];
-
+    
     for(i = 0; i < NUM_THREADS; i++) {
         // memcpy(args[i].hashtable, hashtable, sizeof(hashtable));
         // args[i].hashtable = hashtable;
@@ -31,7 +35,6 @@ void start_leitura(int hashtable) {
         args[i].id = i + 1;
         pthread_create(&(threads[i]), NULL, ler_tabela, &(args[i]));
     }
-
     join_threads();
 }
 

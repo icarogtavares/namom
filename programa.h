@@ -42,6 +42,7 @@ void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
 void print_linkedlist(linkedlist * llist);
 
 void start_leitura(int hashtable);
+void create_threads(int hashtable);
 void join_threads();
 int init_jump(int thread_id);
 void * ler_tabela(void * arg);
