@@ -31,23 +31,30 @@ typedef struct thread_read_args {
     int id;
 } thread_read_args;
 
-pthread_t threads[NUM_THREADS];
+typedef struct thread_join_args {
+    int super_hash_bucket;
+} thread_join_args;
 
 // Interessante seria criar "node ** h1" e alocar memória de acordo como são preenchidos os buckets
 //  para não ficar buckets vazios alocados em memória.
 linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
 linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
 
-pthread_mutex_t mutex_hashtable;
+int match_count = 0; // Para o join
+
+pthread_mutex_t mutex;
 
 void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]);
 void print_linkedlist(linkedlist * llist);
 
 void start_leitura(int hashtable);
-void create_threads(int hashtable);
-void join_threads();
+void join_threads(pthread_t threads[], int length);
 int first_jump(int thread_id);
 void * read_table(void * arg);
+
+void join_partitions();
+void * start_join(void * arg);
+
 int get_hash(int key, int hash);
 
 void popular_arquivo_com_3milhoes_de_tuplas();

@@ -21,11 +21,8 @@ void print_linkedlist(linkedlist * llist) {
 }
 
 void start_leitura(int hashtable) {
-    create_threads(hashtable);
-}
-
-void create_threads(int hashtable) {
     int i;
+    pthread_t threads_for_hashing[NUM_THREADS];
     thread_read_args args[NUM_THREADS];
     
     for(i = 0; i < NUM_THREADS; i++) {
@@ -33,14 +30,14 @@ void create_threads(int hashtable) {
         // args[i].hashtable = hashtable;
         args[i].hashtable = hashtable;
         args[i].id = i + 1;
-        pthread_create(&(threads[i]), NULL, read_table, &(args[i]));
+        pthread_create(&(threads_for_hashing[i]), NULL, read_table, &(args[i]));
     }
-    join_threads();
+    join_threads(threads_for_hashing, NUM_THREADS);
 }
 
-void join_threads() {
+void join_threads(pthread_t threads[], int length) {
     int i;
-    for(i = 0; i < NUM_THREADS; i++) {
+    for(i = 0; i < length; i++) {
         pthread_join(threads[i], NULL);
     }
 }
@@ -68,14 +65,14 @@ void * read_table(void * arg) {
                     int mini_hash_bucket = get_hash(b.pages[i].tuples[j].id, MINI_HASH_BUCKETS);
                     switch(t_args->hashtable) {
                         case 1:
-                            pthread_mutex_lock(&mutex_hashtable);
+                            pthread_mutex_lock(&mutex);
                             push(&hashtable_r[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
-                            pthread_mutex_unlock(&mutex_hashtable);
+                            pthread_mutex_unlock(&mutex);
                             break;
                         case 2:
-                            pthread_mutex_lock(&mutex_hashtable);
+                            pthread_mutex_lock(&mutex);
                             push(&hashtable_s[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
-                            pthread_mutex_unlock(&mutex_hashtable);
+                            pthread_mutex_unlock(&mutex);
                             break;
                     }
                 }
@@ -98,28 +95,49 @@ void * read_table(void * arg) {
     pthread_exit((void*) 0);
 }
 
-void start_join(linkedlist hashtable_r[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS], linkedlist hashtable_s[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
-    int i, j;
-    node * r_node;
-    node * s_node;
-    int count = 0;
+void join_partitions() {
+    int i;
+    pthread_t threads_for_join[SUPER_HASH_BUCKETS];
+    thread_join_args args[SUPER_HASH_BUCKETS];
 
     for(i = 0; i < SUPER_HASH_BUCKETS; i++) {
-        for(j = 0; j < MINI_HASH_BUCKETS; j++) {
-            r_node = hashtable_r[i][j].head;
-            while (r_node != NULL) {
-                s_node = hashtable_s[i][j].head;
-                while(s_node != NULL) {
-                    if(r_node->t.id == s_node->t.id) {
-                        count++;
-                    }
-                    s_node = s_node->next;
+        args[i].super_hash_bucket = i;
+        pthread_create(&(threads_for_join[i]), NULL, start_join, &args[i]);
+    }
+    join_threads(threads_for_join, SUPER_HASH_BUCKETS);
+    printf("Total matches: %d", match_count);
+    match_count = 0;
+}
+
+void * start_join(void * arg) {
+    thread_join_args * t_args = (thread_join_args*) arg;
+    int cur_mini_hash_bucket;
+    int super_hash_bucket = t_args->super_hash_bucket;
+
+    node * r_node;
+    node * s_node;
+    int local_match_count = 0;
+
+    for(cur_mini_hash_bucket = 0; cur_mini_hash_bucket < MINI_HASH_BUCKETS; cur_mini_hash_bucket++) {
+        r_node = hashtable_r[super_hash_bucket][cur_mini_hash_bucket].head;
+        while (r_node != NULL) {
+            s_node = hashtable_s[super_hash_bucket][cur_mini_hash_bucket].head;
+            while(s_node != NULL) {
+                if(r_node->t.id == s_node->t.id) {
+                    local_match_count++;
                 }
-                r_node = r_node->next;
+                s_node = s_node->next;
             }
+            r_node = r_node->next;
         }
     }
-    printf("Matches: %d\n", count);
+    pthread_mutex_lock(&mutex);
+    match_count+= local_match_count;
+    pthread_mutex_unlock(&mutex);
+
+    printf("Thread[%d] match count: %d\n", t_args->super_hash_bucket, local_match_count);
+
+    pthread_exit((void*) 0);
 }
 
 int get_hash(int key, int hash) {
@@ -213,7 +231,7 @@ void imprimir_arquivo_bloco() {
 }
 
 int main(int argc, char **argv) {
-    pthread_mutex_init(&mutex_hashtable, NULL);
+    pthread_mutex_init(&mutex, NULL);
     int opcao = -1;
     do {
         printf("**********************************\n");
@@ -231,12 +249,12 @@ int main(int argc, char **argv) {
                 start_leitura(2);
                 break;
             case 3:
-                start_join(hashtable_r, hashtable_s);
+                join_partitions();
                 break;
             case 4:
                 start_leitura(1);
                 start_leitura(2);
-                start_join(hashtable_r, hashtable_s);
+                join_partitions();
                 break;
             case 5:
                 popular_arquivo_com_3milhoes_de_tuplas();
@@ -246,6 +264,6 @@ int main(int argc, char **argv) {
         }
     } while (opcao != 0);
     
-    pthread_mutex_destroy(&mutex_hashtable);
+    pthread_mutex_destroy(&mutex);
     pthread_exit(NULL);
 }
