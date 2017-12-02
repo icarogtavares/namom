@@ -25,11 +25,11 @@
 #define SUPER_HASH_BUCKETS 3
 #define MINI_HASH_BUCKETS 5
 
-typedef struct thread_join_args {
+typedef struct thread_read_args {
     // linkedlist * hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
     int hashtable; // [1=hashtable_r], [2=hashtable_s]
     int id;
-} thread_join_args;
+} thread_read_args;
 
 pthread_t threads[NUM_THREADS];
 
@@ -46,8 +46,8 @@ void print_linkedlist(linkedlist * llist);
 void start_leitura(int hashtable);
 void create_threads(int hashtable);
 void join_threads();
-int init_jump(int thread_id);
-void * ler_tabela(void * arg);
+int first_jump(int thread_id);
+void * read_table(void * arg);
 int get_hash(int key, int hash);
 
 void popular_arquivo_com_3milhoes_de_tuplas();
