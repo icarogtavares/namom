@@ -1,8 +1,7 @@
 #ifndef _LINKEDLIST_H
 #define _LINKEDLIST_H
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "main.h"
 #include "datatypes.h"
 
 typedef struct node {
@@ -12,6 +11,7 @@ typedef struct node {
 
 typedef struct linkedlist {
     node * head;
+    pthread_mutex_t mutex;
 } linkedlist;
 
 void push(linkedlist * llist, tuple t);

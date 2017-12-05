@@ -65,14 +65,14 @@ void * read_table(void * arg) {
                     int mini_hash_bucket = get_hash(b.pages[i].tuples[j].id, MINI_HASH_BUCKETS);
                     switch(t_args->hashtable) {
                         case 1:
-                            pthread_mutex_lock(&mutex);
+                            pthread_mutex_lock(&hashtable_r[super_hash_bucket][mini_hash_bucket].mutex);
                             push(&hashtable_r[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
-                            pthread_mutex_unlock(&mutex);
+                            pthread_mutex_unlock(&hashtable_r[super_hash_bucket][mini_hash_bucket].mutex);
                             break;
                         case 2:
-                            pthread_mutex_lock(&mutex);
+                            pthread_mutex_lock(&hashtable_s[super_hash_bucket][mini_hash_bucket].mutex);
                             push(&hashtable_s[super_hash_bucket][mini_hash_bucket], b.pages[i].tuples[j]);
-                            pthread_mutex_unlock(&mutex);
+                            pthread_mutex_unlock(&hashtable_s[super_hash_bucket][mini_hash_bucket].mutex);
                             break;
                     }
                 }
@@ -230,8 +230,19 @@ void imprimir_arquivo_bloco() {
     printf("\n\n");
 }
 
+void init_mutexes() {
+    int i, j;
+    for(i = 0; i < SUPER_HASH_BUCKETS; i++) {
+        for(j = 0; j < MINI_HASH_BUCKETS; j++) {
+            pthread_mutex_init(&hashtable_r[i][j].mutex, NULL);
+            pthread_mutex_init(&hashtable_s[i][j].mutex, NULL);
+        }
+    }
+}
+
 int main(int argc, char **argv) {
     pthread_mutex_init(&mutex, NULL);
+    init_mutexes();
     int opcao = -1;
     do {
         printf("**********************************\n");

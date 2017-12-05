@@ -1,11 +1,7 @@
 #ifndef _PROGRAMA_H
 #define _PROGRAMA_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <pthread.h>
-
+#include "main.h"
 #include "linkedlist.h"
 #include "datatypes.h"
 
@@ -62,5 +58,7 @@ void popular_arquivo_com_3milhoes_de_tuplas();
 void imprimir_arquivo_tupla();
 void imprimir_arquivo_pagina();
 void imprimir_arquivo_bloco();
+
+void init_mutexes();
 
 #endif
