@@ -1,6 +1,6 @@
 #include "programa.h"
 
-void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
+void print_buckets(linkedlist_t hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) {
     int i, j;
     for(i = 0; i < SUPER_HASH_BUCKETS; i++) {
         printf("[%d]\n", i);
@@ -11,8 +11,8 @@ void print_buckets(linkedlist hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS]) 
     }
 }
 
-void print_linkedlist(linkedlist * llist) {
-    node * current = llist->head;
+void print_linkedlist(linkedlist_t * llist) {
+    node_t * current = llist->head;
 
     while (current != NULL) {
         printf("%d, %s, %s\n", current->t.id, current->t.name, current->t.last_name);
@@ -49,13 +49,13 @@ int first_jump(int thread_id) {
 void * read_table(void * arg) {
     thread_read_args * t_args = (thread_read_args*) arg;
     FILE *arq = fopen(FILE_PATH, "r");
-    block b;
+    block_t b;
     int i, j;
     int cur_block = 0;
 
     if (arq) {
-        fseek(arq, sizeof(block) * first_jump(t_args->id), SEEK_SET);
-        fread(&b, sizeof(block), 1, arq);
+        fseek(arq, sizeof(block_t) * first_jump(t_args->id), SEEK_SET);
+        fread(&b, sizeof(block_t), 1, arq);
         //ler bloco
         while (!feof(arq)) {
             // printf("Thread: %d // Block: %d\n", t_args->id, cur_block);
@@ -79,10 +79,10 @@ void * read_table(void * arg) {
             }
             ++cur_block;
             if(cur_block == JUMP_FACTOR) {
-                fseek(arq, sizeof(block) * (JUMP_FACTOR * NUM_THREADS - JUMP_FACTOR), SEEK_CUR);
+                fseek(arq, sizeof(block_t) * (JUMP_FACTOR * NUM_THREADS - JUMP_FACTOR), SEEK_CUR);
                 cur_block = 0;
             }
-            fread(&b, sizeof(block), 1, arq);
+            fread(&b, sizeof(block_t), 1, arq);
         }
 
         fclose(arq);        
@@ -114,8 +114,8 @@ void * start_join(void * arg) {
     int cur_mini_hash_bucket;
     int super_hash_bucket = t_args->super_hash_bucket;
 
-    node * r_node;
-    node * s_node;
+    node_t * r_node;
+    node_t * s_node;
     int local_match_count = 0;
 
     for(cur_mini_hash_bucket = 0; cur_mini_hash_bucket < MINI_HASH_BUCKETS; cur_mini_hash_bucket++) {
@@ -147,7 +147,7 @@ int get_hash(int key, int hash) {
 void popular_arquivo_com_3milhoes_de_tuplas() {
     int i;
     FILE *arq;
-    tuple t;
+    tuple_t t;
 
     for(i = 1; i <= (5000 * NUM_TUPLES_IN_PAGE * NUM_PAGES_IN_BLOCK); i++) { // Colocar FILE_ROWS OU (5000 * NUM_TUPLES_IN_PAGE * NUM_PAGES_IN_BLOCK)
         sprintf(t.name, "%dicaro", i);
@@ -159,14 +159,14 @@ void popular_arquivo_com_3milhoes_de_tuplas() {
             printf("Problema em abrir o arquivo");
             exit(9);
         }
-        fwrite(&t, sizeof(tuple), 1, arq);
+        fwrite(&t, sizeof(tuple_t), 1, arq);
         fclose(arq);
     }
 }
 
 void imprimir_arquivo_tupla() {
     FILE *arq;
-    tuple t;
+    tuple_t t;
 
     printf("\n\n");
     printf("*****************************\n");
@@ -175,18 +175,18 @@ void imprimir_arquivo_tupla() {
     printf("\n");
     arq = fopen("data_test.txt", "r");
     rewind(arq);
-    fread(&t, sizeof(tuple), 1, arq);
+    fread(&t, sizeof(tuple_t), 1, arq);
 
     while (!feof(arq)) {
         printf("%d, %s, %s\n", t.id, t.name, t.last_name);
-        fread(&t, sizeof(tuple),1,arq);
+        fread(&t, sizeof(tuple_t),1,arq);
     }
     printf("\n\n");
 }
 
 void imprimir_arquivo_pagina() {
     FILE *arq;
-    page p;
+    page_t p;
     int i;
     printf("\n\n");
     printf("******************************\n");
@@ -195,20 +195,20 @@ void imprimir_arquivo_pagina() {
     printf("\n");
     arq = fopen("data_test.txt", "r");
     rewind(arq);
-    fread(&p, sizeof(page), 1, arq);
+    fread(&p, sizeof(page_t), 1, arq);
 
     while (!feof(arq)) {
         for(i=0; i < 2; i++) {
             printf("%d, %s, %s\n", p.tuples[i].id, p.tuples[i].name, p.tuples[i].last_name);
         }
-        fread(&p, sizeof(page),1,arq);
+        fread(&p, sizeof(page_t),1,arq);
     }
     printf("\n\n");
 }
 
 void imprimir_arquivo_bloco() {
     FILE *arq;
-    block b;
+    block_t b;
     int i, j;
     printf("\n\n");
     printf("******************************\n");
@@ -217,7 +217,7 @@ void imprimir_arquivo_bloco() {
     printf("\n");
     arq = fopen("data_test.txt", "r");
     rewind(arq);
-    fread(&b, sizeof(block), 1, arq);
+    fread(&b, sizeof(block_t), 1, arq);
 
     while (!feof(arq)) {
         for(i=0; i < 4; i++) {
@@ -225,7 +225,7 @@ void imprimir_arquivo_bloco() {
                 printf("%d, %s, %s\n", b.pages[i].tuples[j].id, b.pages[i].tuples[j].name, b.pages[i].tuples[j].last_name);
             }
         }
-        fread(&b, sizeof(block),1,arq);
+        fread(&b, sizeof(block_t),1,arq);
     }
     printf("\n\n");
 }

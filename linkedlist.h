@@ -7,14 +7,14 @@
 typedef struct node {
     struct tuple t;
     struct node * next;
-} node;
+} node_t;
 
 typedef struct linkedlist {
-    node * head;
+    struct node * head;
     pthread_mutex_t mutex;
-} linkedlist;
+} linkedlist_t;
 
-void push(linkedlist * llist, tuple t);
-tuple * search_by_id(node * head, int id);
+void push(linkedlist_t * llist, tuple_t t);
+tuple_t * search_by_id(node_t * head, int id);
 
 #endif
