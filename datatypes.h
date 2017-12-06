@@ -7,17 +7,17 @@
 
 #define KEY_MAX_LENGTH (256)
 
-typedef struct super_hash_bucket_struct
+typedef struct super_hash_table_s
 {
     char key_string[KEY_MAX_LENGTH];
     map_t mini_hash_buckets;
 } super_hash_bucket_struct;
 
-typedef struct mini_hash_bucket_s
+typedef struct mini_hash_table_s
 {
     char key_string[KEY_MAX_LENGTH];
-    map_t mini_hash_buckets;
-} mini_hash_bucket_t;
+    struct linkedlist llist_of_tuples;
+} mini_hash_table_t;
 
 typedef struct tuple {
     int id;
