@@ -21,6 +21,18 @@
 #define SUPER_HASH_BUCKETS 3
 #define MINI_HASH_BUCKETS 5
 
+typedef struct super_hash_table_s
+{
+    char key_string[KEY_MAX_LENGTH];
+    map_t mini_hash_buckets;
+} super_hash_bucket_struct;
+
+typedef struct mini_hash_table_s
+{
+    char key_string[KEY_MAX_LENGTH];
+    struct linkedlist llist_of_tuples;
+} mini_hash_table_t;
+
 typedef struct thread_read_args {
     // linkedlist_t * hashtable[SUPER_HASH_BUCKETS][MINI_HASH_BUCKETS];
     int hashtable; // [1=hashtable_r], [2=hashtable_s]
